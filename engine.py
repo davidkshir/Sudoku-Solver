@@ -66,6 +66,9 @@ class SudokuEngine:
 
         # iterates all 3 solving methods over entire board
         while True:
+            min_possible_val = {1, 2, 3, 4, 5, 6, 7, 8, 9}
+            min_row = 0
+            min_col = 0
             zero_count = 0
             changed = False
 
@@ -76,20 +79,41 @@ class SudokuEngine:
                     if self.board[i][j] != 0:
                         continue
 
+                    # if there is only 1 possible value the current index could be set it equal to that value
                     temp_possible_val = set(self.solve_by_row(i)) & set(self.solve_by_col(j)) & set(self.solve_by_box(i,j))
+                    if len(temp_possible_val) == 0:
+                        return False
                     if len(temp_possible_val) == 1:
                         self.board[i][j] = temp_possible_val.pop()
                         changed = True
 
-                    zero_count += 1
+                    zero_count += 1 # if neither condition happened current value must still be 0
 
-            if zero_count == 0:
-                break
+                    if len(temp_possible_val) != 1 and len(temp_possible_val) < len(min_possible_val):
+                        min_possible_val = temp_possible_val
+                        min_row = i
+                        min_col = j
 
-            if not changed:
-                raise Exception("Solution requires backtracking, which hasn't been implemented")
+
+            if zero_count == 0: # if no zeros then puzzle is solved
+                return True
+
+            if not changed: # if no changes are made backtracking is necessary to solve puzzle
+                saved_board = [row[:] for row in self.board]
+
+                # tries a random possible value for the index that had the least amount
+                # if it doesn't work it restores the board and tries another, if it does
+                # work it returns to solving the board like normal
+                for value in min_possible_val:
+                    self.board = saved_board
+                    self.board[min_row][min_col] = value
+                    if self.solve():
+                        return True
+
+                return False # returns false if guess didn't work so it can try a different value
 
     def print_board(self):
+        """Prints the board of the Sudoku puzzle"""
         for row in self.board:
             print(row)
 
