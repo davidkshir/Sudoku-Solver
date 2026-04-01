@@ -1,5 +1,3 @@
-puzzle = input("Enter puzzle string: ")
-
 class SudokuEngine:
     """Class for Sudoku solving engine."""
     def __init__(self, puzzle_str: str, row_size: int = 9, col_size: int = 9, box_size: int = 3):
@@ -105,7 +103,7 @@ class SudokuEngine:
                 # if it doesn't work it restores the board and tries another, if it does
                 # work it returns to solving the board like normal
                 for value in min_possible_val:
-                    self.board = saved_board
+                    self.board = [row[:] for row in saved_board]
                     self.board[min_row][min_col] = value
                     if self.solve():
                         return True
@@ -116,15 +114,6 @@ class SudokuEngine:
         """Prints the board of the Sudoku puzzle"""
         for row in self.board:
             print(row)
-
-
-def main():
-    engine = SudokuEngine(puzzle)
-    engine.solve()
-    engine.print_board()
-
-if __name__ == "__main__":
-    main()
 
 
 
