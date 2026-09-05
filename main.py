@@ -1,16 +1,18 @@
-from engine import SudokuEngine
+from solver import SudokuSolver
 import time
 import pyautogui
 
 def main():
-    puzzle = input("Puzzle: ")
-    engine = SudokuEngine(puzzle)
-    engine.solve()
-    answer = engine.board
+    puzzle = input("Puzzle: ") # Expects puzzle starting from top left corner
+    solver = SudokuSolver(puzzle)
+    if not solver.solve():
+        raise ValueError("No solution found.")
+    solver.print_board()
+    answer = solver.board
     rows = len(answer)
     cols = len(answer[0])
 
-    time.sleep(5)
+    time.sleep(3)
 
     for row in range(rows):
         for col in range(cols):
@@ -20,7 +22,7 @@ def main():
                 pyautogui.press('right')
 
         if row < rows - 1:
-            for cell in range(cols - 1):
+            for _ in range(cols - 1):
                 pyautogui.press('left')
 
             pyautogui.press('down')
