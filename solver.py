@@ -135,8 +135,8 @@ class SudokuSolver:
                     if len(temp_possible_val) == 1:
                         self.board[i][j] = temp_possible_val.pop()
                         changed = True
-
-                    zero_count += 1 # if neither condition happened current value must still be 0
+                    else:
+                        zero_count += 1 # if neither condition happened current value must still be 0
 
                     if len(temp_possible_val) != 1 and len(temp_possible_val) < len(min_possible_val):
                         min_possible_val = temp_possible_val
