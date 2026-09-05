@@ -15,7 +15,7 @@ class SudokuSolver:
 
         # convert puzzle string into 2D list called board
         for i in range(0, self.row_size * self.col_size, self.col_size):
-            row = [int(char) for char in puzzle_str[i:i + self.col_size]]
+            row = [int(char) for char in puzzle[i:i + self.col_size]]
             self.board.append(row)
 
         self._validate_row()
@@ -74,7 +74,7 @@ class SudokuSolver:
 
         return possible_row_val
 
-    def solve_by_col(self, col):
+    def _get_col_candidates(self, col):
         """Finds possible values for given coordinates based on the values in the column."""
         possible_col_val = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
@@ -86,7 +86,7 @@ class SudokuSolver:
 
         return possible_col_val
 
-    def find_box(self, row, col):
+    def _find_box(self, row, col):
         """Finds the bounds of the box of the given coordinates."""
         start_row = (row // self.box_size) * self.box_size
         start_col = (col // self.box_size) * self.box_size
@@ -96,10 +96,10 @@ class SudokuSolver:
 
         return start_row, start_col, end_row, end_col
 
-    def solve_by_box(self, row, col):
-        """Finds possible values for given coordinates based on the values in the box"""
+    def _get_box_candidates(self, row, col):
+        """Finds possible values for given coordinates based on the values in the box."""
         possible_box_val = [1, 2, 3, 4, 5, 6, 7, 8, 9]
-        start_row, start_col, end_row, end_col = self.find_box(row, col)
+        start_row, start_col, end_row, end_col = self._find_box(row, col)
 
         # removes any value already in box from possible values
         for i in range(start_row, end_row):
@@ -111,7 +111,7 @@ class SudokuSolver:
 
 
     def solve(self):
-        """Solves Sudoku puzzle using solve_by_row, solve_by_col, & solve_by_box methods."""
+        """Solves the Sudoku puzzle using constraint checking and backtracking."""
 
         # iterates all 3 solving methods over entire board
         while True:
@@ -129,7 +129,7 @@ class SudokuSolver:
                         continue
 
                     # if there is only 1 possible value the current index could be set it equal to that value
-                    temp_possible_val = set(self.solve_by_row(i)) & set(self.solve_by_col(j)) & set(self.solve_by_box(i,j))
+                    temp_possible_val = set(self._get_row_candidates(i)) & set(self._get_col_candidates(j)) & set(self._get_box_candidates(i, j))
                     if len(temp_possible_val) == 0:
                         return False
                     if len(temp_possible_val) == 1:
@@ -150,7 +150,7 @@ class SudokuSolver:
             if not changed: # if no changes are made backtracking is necessary to solve puzzle
                 saved_board = [row[:] for row in self.board]
 
-                # tries a random possible value for the index that had the least amount
+                # Tries each possible value for the cell with the fewest candidates
                 # if it doesn't work it restores the board and tries another, if it does
                 # work it returns to solving the board like normal
                 for value in min_possible_val:
@@ -165,10 +165,3 @@ class SudokuSolver:
         """Prints the board of the Sudoku puzzle"""
         for row in self.board:
             print(row)
-
-
-
-
-
-
-
