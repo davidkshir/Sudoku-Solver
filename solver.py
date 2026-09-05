@@ -1,10 +1,16 @@
-class SudokuEngine:
-    """Class for Sudoku solving engine."""
-    def __init__(self, puzzle_str: str, row_size: int = 9, col_size: int = 9, box_size: int = 3):
-        self.puzzle_str = puzzle_str
-        self.row_size = row_size
-        self.col_size = col_size
-        self.box_size = box_size
+class SudokuSolver:
+    """Class for Sudoku solver."""
+    def __init__(self, puzzle: str,):
+        if not all(char in "0123456789" for char in puzzle):
+            raise ValueError("Puzzle must only contain digits")
+
+        if 81 != len(puzzle):
+            raise ValueError("Invalid puzzle length")
+
+        self.puzzle_str = puzzle
+        self.row_size = 9
+        self.col_size = 9
+        self.box_size = 3
         self.board = []
 
         # convert puzzle string into 2D list called board
@@ -12,7 +18,52 @@ class SudokuEngine:
             row = [int(char) for char in puzzle_str[i:i + self.col_size]]
             self.board.append(row)
 
-    def solve_by_row(self, row):
+        self._validate_row()
+        self._validate_col()
+        self._validate_box()
+
+
+    def _validate_row(self):
+        for row in self.board:
+            nonzero_values = [value for value in row if value != 0]
+            unique_values = set(nonzero_values)
+
+            if len(unique_values) != len(nonzero_values):
+                raise ValueError("Puzzle cannot duplicate numbers in the rows")
+
+    def _validate_col(self):
+        for col in range(self.col_size):
+            nonzero_values =[self.board[row][col] for row in range(self.row_size) if self.board[row][col] != 0]
+            unique_values = set(nonzero_values)
+            if len(unique_values) != len(nonzero_values):
+                raise ValueError("Puzzle cannot duplicate numbers in the columns")
+
+    def _validate_box(self):
+        box_starts = [
+            (0, 0), (0, 3), (0, 6),
+            (3, 0), (3, 3), (3, 6),
+            (6, 0), (6, 3), (6, 6)
+        ]
+
+        for start_row, start_col in box_starts:
+            nonzero_values = []
+
+            for i in range(9):
+                row = start_row + i // 3
+                col = start_col + i % 3
+
+                value = self.board[row][col]
+
+                if value != 0:
+                    nonzero_values.append(value)
+
+            unique_values = set(nonzero_values)
+
+            if len(unique_values) != len(nonzero_values):
+                raise ValueError("Puzzle cannot duplicate numbers in the boxes")
+
+
+    def _get_row_candidates(self, row):
         """Finds possible values for given coordinates based on the values in the row."""
         possible_row_val = [1, 2, 3, 4, 5, 6, 7, 8, 9]
 
