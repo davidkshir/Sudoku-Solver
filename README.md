@@ -49,7 +49,3 @@ After entering the puzzle, focus the top-left cell of the target Sudoku interfac
 By default, the program waits 3 seconds before entering the solution. This delay can be changed by modifying the `time.sleep()` call in `main.py`.
 
 The automatic input assumes the target interface supports number entry and navigation using the arrow keys.
-
-## Future Improvements
-
-- Automatic puzzle extraction
